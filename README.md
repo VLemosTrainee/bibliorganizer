@@ -4,8 +4,6 @@
   <h1>📚 BookOrganizer</h1>
   <p><strong>Um sistema elegante e moderno para gestão de bibliotecas.</strong></p>
   <p>Desenvolvido com Laravel, Livewire e DaisyUI.</p>
-
-    
   <br>
 </div>
 
@@ -60,6 +58,7 @@ O **BookOrganizer** é uma aplicação web minimalista projetada para demonstrar
 *   **Frontend:** Livewire 3, Alpine.js, Tailwind CSS
 *   **UI/UX:** DaisyUI
 *   **Base de Dados:** MySQL
+*   **APIs Externas:** Google Books API (para busca de dados por ISBN)
 *   **Ambiente de Desenvolvimento:** Laravel Herd
 
 ---
