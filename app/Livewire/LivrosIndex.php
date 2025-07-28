@@ -14,6 +14,21 @@ class LivrosIndex extends Component
     public string $ordenarPor = 'nome';
     public string $ordem = 'asc';
     public array $selecionados = [];
+    public string $titulo = 'Gerir Livros'; // Título padrão
+
+    #[On('requisicao-concluida')]
+    public function onRequisicaoConcluida()
+    {
+
+        
+    }
+
+    public function mount()
+    {
+        if (auth()->user()->role === 'cidadao') {
+            $this->titulo = 'Pesquisar no Acervo';
+        }
+    }
 
     #[On('livro-adicionado')]
     public function fecharModalEAtualizar()

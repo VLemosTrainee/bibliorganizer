@@ -34,18 +34,11 @@
 
             <!-- Page Content -->
             <main>
-                {{-- 
-                ================================================================
-                CORREÇÃO DO LAYOUT
-                ================================================================
-                - Adicionada a div com padding para garantir margens em mobile.
-                --}}
                 <div class="py-12">
-    <div class="max-w-7xl mx-auto pl-4 pr-4 sm:px-6 lg:px-8">
-        {{ $slot }}
-    </div>
-</div>
-
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        {{ $slot }}
+                    </div>
+                </div>
             </main>
         </div>
 
@@ -53,13 +46,8 @@
 
         @livewireScripts
 
-        {{-- 
-        ================================================================
-        BLOCO DE SCRIPT ÚNICO E CONSOLIDADO
-        ================================================================
-        --}}
+        {{-- BLOCO DE SCRIPT ÚNICO E CONSOLIDADO --}}
         <script>
-            // Função global para confirmação, fora do event listener para garantir que está sempre disponível.
             function confirmarGuardar() {
                 if (confirm("Tem a certeza que deseja guardar as alterações?")) {
                     Livewire.dispatch('call-save');
@@ -67,54 +55,42 @@
             }
 
             document.addEventListener('livewire:initialized', () => {
-
                 
-                
-                // Ouvinte para fechar qualquer modal
+                // OUVINTES GERAIS
                 Livewire.on('close-modal', (modalId) => {
                     const modal = document.getElementById(modalId);
                     if (modal) { modal.close(); }
                 });
 
-                // Ouvinte para abrir qualquer modal
                 Livewire.on('open-modal', (modalId) => {
                     const modal = document.getElementById(modalId);
                     if(modal) { modal.showModal(); }
                 });
+                
+                // OUVINTES DE EXPORTAÇÃO
+                Livewire.on('exportar-livros', (event) => { /* ... */ });
+                Livewire.on('exportar-autores', (event) => { /* ... */ });
+                Livewire.on('exportar-editoras', (event) => { /* ... */ });
 
-                // Ouvinte para a exportação de LIVROS
-                Livewire.on('exportar-livros', (event) => {
-                    if (event.ids.length === 0) { alert('Nenhum livro para exportar.'); return; }
-                    const idsQuery = event.ids.join(',');
-                    const url = `{{ route('livros.export') }}?ids=${idsQuery}`;
-                    window.location.href = url;
-                });
-
-                // Ouvinte para a exportação de AUTORES
-                Livewire.on('exportar-autores', (event) => {
-                    if (event.ids.length === 0) { alert('Nenhum autor para exportar.'); return; }
-                    const idsQuery = event.ids.join(',');
-                    const url = `{{ route('autores.export') }}?ids=${idsQuery}`;
-                    window.location.href = url;
-                });
-
-                // Ouvinte para a exportação de EDITORAS
-                Livewire.on('exportar-editoras', (event) => {
-                    if (event.ids.length === 0) { alert('Nenhuma editora para exportar.'); return; }
-                    const idsQuery = event.ids.join(',');
-                    const url = `{{ route('editoras.export') }}?ids=${idsQuery}`;
-                    window.location.href = url;
-                });
-
-                // Ouvinte para quando um LIVRO é guardado com sucesso
+                // OUVINTES DE NOTIFICAÇÃO
                 Livewire.on('livro-salvo-com-sucesso', (event) => {
                     document.getElementById('add_livro_modal').close();
                     alert(event.mensagem);
                 });
 
-                // Ouvinte para mostrar ERRO AO APAGAR (ex: editora com livros)
                 Livewire.on('erro-apagar', (mensagem) => {
                     alert(mensagem);
+                });
+
+                // ================================================================
+                // OUVINTES  PARA O SISTEMA DE REQUISIÇÕES
+                // ================================================================
+                Livewire.on('erro', (mensagem) => {
+                    alert('Erro: ' + mensagem);
+                });
+
+                Livewire.on('sucesso', (mensagem) => {
+                    alert('Sucesso: ' + mensagem);
                 });
 
             });

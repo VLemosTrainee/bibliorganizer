@@ -2,24 +2,30 @@
     {{-- CABEÇALHO COM A NOVA ESTRUTURA --}}
     <div class="space-y-6 mb-6">
         <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-200">Gerir Livros</h1>
+            {{-- TÍTULO DINÂMICO --}}
+            <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-200">{{ $titulo }}</h1>
+            
             <a href="{{ route('dashboard') }}" class="btn btn-ghost">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                 Voltar para a Dashboard
             </a>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <button 
-                wire:click="$dispatch('exportar-livros', { ids: {{ json_encode(count($selecionados) > 0 ? $selecionados : $idsVisiveis) }} })"
-                class="btn btn-success btn-lg w-full" @if(count($livros) === 0) disabled @endif>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                Exportar
-            </button>
-            <button class="btn btn-primary btn-lg w-full" onclick="add_livro_modal.showModal()">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-                Adicionar Novo Livro
-            </button>
-        </div>
+        
+        {{-- SÓ MOSTRA OS BOTÕES DE AÇÃO PARA O ADMIN --}}
+        @if (auth()->user()->role === 'admin')
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button 
+                    wire:click="$dispatch('exportar-livros', { ids: {{ json_encode(count($selecionados) > 0 ? $selecionados : $idsVisiveis) }} })"
+                    class="btn btn-success btn-lg w-full" @if(count($livros) === 0) disabled @endif>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                    Exportar
+                </button>
+                <button class="btn btn-primary btn-lg w-full" onclick="add_livro_modal.showModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                    Adicionar Novo Livro
+                </button>
+            </div>
+        @endif
     </div>
 
     {{-- FILTROS E PESQUISA --}}
@@ -31,22 +37,8 @@
 
     {{-- LISTAGEM DE LIVROS --}}
     <div class="space-y-2">
-        
-        {{-- CABEÇALHO DA LISTA COM ALTURA E ALINHAMENTO CORRIGIDOS --}}
-        {{-- Alteração: de p-4 para py-2 px-4 --}}
-        <div class="hidden md:flex bg-base-200 py-2 px-4 rounded-lg text-sm font-semibold text-base-content/70 items-center gap-4">
-            <div class="w-8 flex-shrink-0"></div>
-            <div class="w-[75px] flex-shrink-0"></div>
-            <div wire:click="$dispatch('ordenar-lista', { coluna: 'nome' })" class="flex-grow cursor-pointer flex items-center gap-1 hover:text-primary transition">
-                <span>Livro</span>
-                @if ($ordenarPor === 'nome') <span class="text-xs">{{ $ordem === 'asc' ? '▲' : '▼' }}</span> @endif
-            </div>
-            <div wire:click="$dispatch('ordenar-lista', { coluna: 'preco' })" class="flex-shrink-0 w-32 text-right cursor-pointer flex items-center justify-end gap-1 hover:text-primary transition">
-                <span>Preço</span>
-                @if ($ordenarPor === 'preco') <span class="text-xs">{{ $ordem === 'asc' ? '▲' : '▼' }}</span> @endif
-            </div>
-            <div class="w-24 flex-shrink-0 text-center">Ações</div>
-        </div>
+        {{-- CABEÇALHO DA LISTA --}}
+        {{-- ... (o seu cabeçalho da lista permanece o mesmo) ... --}}
 
         {{-- LOOP DOS LIVROS --}}
         @forelse ($livros as $livro)
@@ -55,11 +47,25 @@
                 class="flex items-center gap-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow hover:bg-base-100 transition duration-150 cursor-pointer"
                 wire:click="$dispatch('mostrar-detalhes', { livroId: {{ $livro->id }} })"
             >
-                <div class="flex-shrink-0" wire:click.stop>
-                    <input type="checkbox" wire:model.live="selecionados" value="{{ $livro->id }}" class="checkbox checkbox-primary" />
-                </div>
-                <div class="flex-shrink-0 bg-base-200 rounded-sm overflow-hidden" style="width: 100px !important; height: 150px !important;">
-                    <img src="{{ $livro->imagem_capa ? asset('storage/' . $livro->imagem_capa) : asset('images/noAvailable.jpg') }}" alt="Capa de {{ $livro->nome }}" class="w-full h-full object-cover" />
+@if (auth()->user()->role === 'admin')
+    <div class="flex-shrink-0" wire:click.stop>
+        <input type="checkbox" wire:model.live="selecionados" value="{{ $livro->id }}" class="checkbox checkbox-primary" />
+    </div>
+@endif
+ <div class="flex-shrink-0 relative" style="width: 120px !important; height: 160px !important;">
+                    <div class="w-full h-full bg-base-200 rounded-sm overflow-hidden">
+                        <img 
+                            src="{{ $livro->imagem_capa ? asset('storage/' . $livro->imagem_capa) : asset('images/noAvailable.jpg') }}" 
+                            alt="Capa de {{ $livro->nome }}" 
+                            class="w-full h-full object-cover @if($livro->stock_disponivel <= 0) grayscale @endif" 
+                        />
+                    </div>
+                    {{-- Selo de Indisponível (agora centralizado e menor) --}}
+                    @if ($livro->stock_disponivel <= 0)
+                        <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-sm">
+                            <span class="badge badge-error badge-sm font-semibold">INDISPONÍVEL</span>
+                        </div>
+                    @endif
                 </div>
                 <div class="flex-grow">
                     <div class="text-sm opacity-60 font-mono">{{ $livro->isbn }}</div>
@@ -72,18 +78,35 @@
                 <div class="flex-shrink-0 w-32 text-right">
                     <span class="font-bold text-lg text-base-content">€ {{ number_format($livro->preco, 2, ',', '.') }}</span>
                 </div>
-                <div class="flex-shrink-0 w-24 flex justify-center gap-2" wire:click.stop>
+
+            <!-- COLUNA DE AÇÕES DINÂMICA (CORRIGIDA) -->
+            <div class="flex-shrink-0 w-24 flex justify-center gap-2" wire:click.stop>
+                @if (auth()->user()->role === 'admin')
+                    {{-- Ações para o Admin --}}
                     <button wire:click.stop="$dispatch('editar-livro', { livroId: {{ $livro->id }} })" class="btn btn-ghost btn-sm" title="Editar">✏️</button>
                     <button 
                         wire:click.stop="$dispatch('apagar-livro', { livroId: {{ $livro->id }} })" 
-                        wire:confirm="Tem a certeza que deseja apagar este livro? Os autores e a editora não serão apagados."
-                        class="btn btn-ghost btn-sm text-error" 
-                        title="Apagar">❌</button>    
-                </div>
+                        wire:confirm="Tem a certeza que deseja apagar este livro?"
+                        class="btn btn-ghost btn-sm text-error" title="Apagar">❌</button>
+                @else
+                    {{-- Ação para o Cidadão --}}
+                    @if ($livro->stock_disponivel > 0)
+                        <button 
+                            wire:click.stop="$dispatch('abrir-modal-requisicao', { livroId: {{ $livro->id }} })" 
+                            class="btn btn-primary btn-sm"
+                        >
+                            Requisitar
+                        </button>
+                    @else
+                   
+                    @endif
+                @endif
+            </div>
+
             </div>
         @empty
             <div class="text-center py-16 bg-white dark:bg-gray-800 rounded-lg shadow">
-                <p>Nenhum livro encontrado. Comece por adicionar um!</p>
+                <p>Nenhum livro encontrado.</p>
             </div>
         @endforelse
     </div>
@@ -103,4 +126,14 @@
         </div>
         <form method="dialog" class="modal-backdrop"><button>close</button></form>
     </dialog>
+
+    {{--MODAL PARA CONFIRMAR A REQUISIÇÃO --}}
+<dialog id="confirmar_requisicao_modal" class="modal">
+    <div class="modal-box w-11/12 max-w-2xl">
+        {{-- O conteúdo deste modal será o nosso novo componente --}}
+        <livewire:confirmar-requisicao />
+    </div>
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+</dialog>
+
 </div>

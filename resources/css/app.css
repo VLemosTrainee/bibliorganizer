@@ -5,3 +5,26 @@
 [x-cloak] {
     display: none;
 }
+
+/* Animação que move os itens do carrossel */
+@keyframes carousel-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    /* Move para a esquerda. Ajuste este valor se os seus cards tiverem tamanhos diferentes. */
+    /* (Largura do card + gap) * número de cards */
+    /* (15rem + 1rem) * 10 = -160rem (exemplo para 10 cards) */
+    transform: translateX(-160rem); 
+  }
+}
+
+/* Aplica a animação ao nosso carrossel */
+.carousel-animated .carousel-center {
+  animation: carousel-scroll 40s linear infinite; /* 40s para a animação completar */
+}
+
+/* Pausa a animação quando o rato está sobre o carrossel */
+.carousel-animated:hover .carousel-center {
+  animation-play-state: paused;
+}

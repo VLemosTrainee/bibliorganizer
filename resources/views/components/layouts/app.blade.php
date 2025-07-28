@@ -46,14 +46,8 @@
 
         @livewireScripts
 
-        {{-- 
-        ================================================================
-        BLOCO DE SCRIPT ÚNICO E CONSOLIDADO
-        ================================================================
-        --}}
+        {{-- BLOCO DE SCRIPT ÚNICO E CONSOLIDADO --}}
         <script>
-            // Função global para a confirmação de guardar, se a estiver a usar.
-            // Se mudou para wire:confirm, esta função pode ser removida.
             function confirmarGuardar() {
                 if (confirm("Tem a certeza que deseja guardar as alterações?")) {
                     Livewire.dispatch('call-save');
@@ -62,7 +56,7 @@
 
             document.addEventListener('livewire:initialized', () => {
                 
-                // OUVINTES GERAIS
+                // OUVINTES GERAIS DE MODAIS E NOTIFICAÇÕES
                 Livewire.on('close-modal', (modalId) => {
                     const modal = document.getElementById(modalId);
                     if (modal) { modal.close(); }
@@ -74,10 +68,21 @@
                 });
 
                 Livewire.on('erro-apagar', (mensagem) => {
-                    alert(mensagem);
+                    alert('Erro: ' + mensagem);
+                });
+                
+                // ================================================================
+                // OUVINTES GENÉRICOS ADICIONADOS (PARA REQUISIÇÕES E OUTROS)
+                // ================================================================
+                Livewire.on('erro', (mensagem) => {
+                    alert('Erro: ' + mensagem);
                 });
 
-                // OUVINTES PARA LIVROS
+                Livewire.on('sucesso', (mensagem) => {
+                    alert('Sucesso: ' + mensagem);
+                });
+
+                // OUVINTES DE EXPORTAÇÃO
                 Livewire.on('exportar-livros', (event) => {
                     if (event.ids.length === 0) { alert('Nenhum livro para exportar.'); return; }
                     const idsQuery = event.ids.join(',');
@@ -85,12 +90,6 @@
                     window.location.href = url;
                 });
 
-                Livewire.on('livro-salvo-com-sucesso', (event) => {
-                    document.getElementById('add_livro_modal').close();
-                    alert(event.mensagem);
-                });
-
-                // OUVINTES PARA AUTORES
                 Livewire.on('exportar-autores', (event) => {
                     if (event.ids.length === 0) { alert('Nenhum autor para exportar.'); return; }
                     const idsQuery = event.ids.join(',');
@@ -98,14 +97,17 @@
                     window.location.href = url;
                 });
 
-                // =======================================================
-                // OUVINTE FALTANTE PARA EXPORTAR EDITORAS
-                // =======================================================
                 Livewire.on('exportar-editoras', (event) => {
                     if (event.ids.length === 0) { alert('Nenhuma editora para exportar.'); return; }
                     const idsQuery = event.ids.join(',');
                     const url = `{{ route('editoras.export') }}?ids=${idsQuery}`;
                     window.location.href = url;
+                });
+
+                // OUVINTE ESPECÍFICO DE SUCESSO PARA LIVROS (pode ser substituído pelo genérico)
+                Livewire.on('livro-salvo-com-sucesso', (event) => {
+                    document.getElementById('add_livro_modal').close();
+                    alert(event.mensagem);
                 });
 
             });

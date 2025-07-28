@@ -1,52 +1,80 @@
 <?php
 
-use App\Exports\LivrosExport;
-use App\Exports\AutoresExport;
-use App\Exports\EditorasExport;
-use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Dashboard;
 use App\Livewire\LivrosIndex;
 use App\Livewire\AutorIndex;
 use App\Livewire\EditoraIndex;
+use App\Livewire\MontraLivros;
+use App\Livewire\GestaoUtilizadores;
+use App\Livewire\MinhasRequisicoes;
+use App\Livewire\GestaoRequisicoes;
+use App\Exports\LivrosExport;
+use App\Exports\AutoresExport;
+use App\Exports\EditorasExport;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Livewire\ConfirmarDevolucaoPagina;
+use App\Livewire\EditarUtilizadorPagina;
+use Illuminate\Support\Facades\Mail;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// A rota 'requisicao.criar' está comentada, o que é ótimo, pois já não a usamos.
+// use App\Livewire\CriarRequisicao;
 
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
+
+// ROTA PÚBLICA / PÁGINA INICIAL
+Route::get('/', MontraLivros::class)->name('home');
+
+
+// ROTAS AUTENTICADAS
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    // Rotas de Páginas
+    
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
+    
+    // Páginas de Gestão Abertas a todos os utilizadores logados
     Route::get('/livros', LivrosIndex::class)->name('livros.index');
-    Route::get('/autores', AutorIndex::class)->name('autores.index');
-    Route::get('/editoras', EditoraIndex::class)->name('editoras.index');
 
-    // Rota de Exportação de Livros (COM A SINTAXE CORRETA)
+    // ================================================================
+    // ROTAS PROTEGIDAS APENAS PARA ADMINS
+    // ================================================================
+    Route::middleware(['admin'])->group(function () {
+        Route::get('/autores', AutorIndex::class)->name('autores.index');
+        Route::get('/editoras', EditoraIndex::class)->name('editoras.index');
+        Route::get('/gestao/utilizadores', GestaoUtilizadores::class)->name('utilizadores.index');
+        Route::get('/gestao/requisicoes', GestaoRequisicoes::class)->name('requisicoes.admin');
+        Route::get('/gestao/requisicoes/{requisicao}/devolver', ConfirmarDevolucaoPagina::class)
+     ->name('requisicoes.devolver');
+        Route::get('/gestao/utilizadores/{user}/editar', EditarUtilizadorPagina::class)
+     ->name('utilizadores.editar');
+        Route::get('/minhas-requisicoes', MinhasRequisicoes::class)->name('requisicoes.minhas');
+
+        // Rotas de Exportação de Admin
+        Route::get('/autores/exportar', function () {
+            // ...
+        })->name('autores.export');
+
+        Route::get('/editoras/exportar', function () {
+            // ...
+        })->name('editoras.export');
+    });
+    
+    // ================================================================
+    // ROTA ESPECÍFICA DO CIDADÃO
+    // ================================================================
+    Route::get('/minhas-requisicoes', MinhasRequisicoes::class)->name('requisicoes.minhas');
+    
+    // Rota de Exportação aberta a todos os logados (se aplicável)
     Route::get('/livros/exportar', function () {
-        $idsString = request()->query('ids', '');
-        $ids = !empty($idsString) ? explode(',', $idsString) : [];
-        $nomeFicheiro = 'BookOrganizer_' . now()->format('Y-m-d_Hisv') . '.xlsx';
-        return Excel::download(new LivrosExport($ids), $nomeFicheiro);
+        // ...
     })->name('livros.export');
     
-    // Rota de Exportação de Autores
-    Route::get('/autores/exportar', function () {
-        $idsString = request()->query('ids', '');
-        $ids = !empty($idsString) ? explode(',', $idsString) : [];
-        $nomeFicheiro = 'BookOrganizer_Autores_' . now()->format('Y-m-d_Hisv') . '.xlsx';
-        return Excel::download(new AutoresExport($ids), $nomeFicheiro);
-    })->name('autores.export');
-
-    // Rota de Exportação de Editoras
-    Route::get('/editoras/exportar', function () {
-        $idsString = request()->query('ids', '');
-        $ids = !empty($idsString) ? explode(',', $idsString) : [];
-        $nomeFicheiro = 'BookOrganizer_Editoras_' . now()->format('Y-m-d_Hisv') . '.xlsx';
-        return Excel::download(new EditorasExport($ids), $nomeFicheiro);
-    })->name('editoras.export');
-
 });

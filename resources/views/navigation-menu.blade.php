@@ -3,29 +3,43 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex">
-                <!-- Logo -->
+            <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}">
-                        <x-application-mark class="block h-9 w-auto" />
+                        {{-- Substituímos o componente do Jetstream pela nossa tag de imagem --}}
+                        <img class="block h-12 w-auto" src="{{ asset('images/logo_bookorganize3.svg') }}" alt="BookOrganizer Logo">
                     </a>
                 </div>
 
                  <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link> 
+<div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+    @if (Auth::user()->role === 'admin')
+        {{-- LINKS PARA O ADMIN --}}
+        <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
+            {{ __('Dashboard') }}
+        </x-nav-link>
+        <x-nav-link href="{{ route('livros.index') }}" :active="request()->routeIs('livros.index')">
+            {{ __('Livros') }}
+        </x-nav-link>
+        <x-nav-link href="{{ route('autores.index') }}" :active="request()->routeIs('autores.index')">
+            {{ __('Autores') }}
+        </x-nav-link>
+        <x-nav-link href="{{ route('editoras.index') }}" :active="request()->routeIs('editoras.index')">
+            {{ __('Editoras') }}
+        </x-nav-link>
+        {{-- Adicione aqui links para Gestão de Utilizadores e Requisições Admin --}}
 
-                    <x-nav-link href="{{ route('livros.index') }}" :active="request()->routeIs('livros.index')">
-                        {{ __('Livros') }}
-                    </x-nav-link>
-                    <x-nav-link href="{{ route('autores.index') }}" :active="request()->routeIs('autores.index')">
-                        {{ __('Autores') }}
-                    </x-nav-link>
-                    <x-nav-link href="{{ route('editoras.index') }}" :active="request()->routeIs('editoras.index')">
-                    {{ __('Editoras') }}
-                    </x-nav-link>
-                </div>
+    @else
+        {{-- LINKS PARA O CIDADÃO --}}
+        <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
+            {{ __('Início') }}
+        </x-nav-link>
+        <x-nav-link href="{{ route('livros.index') }}" :active="request()->routeIs('livros.index')">
+            {{ __('Pesquisar Livros') }}
+        </x-nav-link>
+        {{-- Adicione aqui o link para 'Minhas Requisições' --}}
+    @endif
+</div>
             </div>
 
             <div class="hidden sm:flex sm:items-center sm:ms-6">

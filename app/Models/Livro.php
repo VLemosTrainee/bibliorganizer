@@ -10,8 +10,7 @@ class Livro extends Model
     use HasFactory;
 
     /**
-     * A "lista branca" de atributos que podem ser preenchidos em massa.
-     * ESTA É A PROPRIEDADE QUE FALTA E QUE RESOLVE O ERRO FINAL.
+     * Os atributos que são preenchíveis em massa.
      */
     protected $fillable = [
         'isbn',
@@ -20,6 +19,9 @@ class Livro extends Model
         'bibliografia',
         'imagem_capa',
         'preco',
+        'stock_total',         // Adicionado
+        'stock_disponivel',    // Adicionado
+        'estado_conservacao',  // Adicionado
     ];
 
     /**
@@ -44,5 +46,13 @@ class Livro extends Model
     public function autores()
     {
         return $this->belongsToMany(Autor::class, 'autor_livro');
+    }
+
+    /**
+     * Define a relação de que um Livro pode ter muitas Requisições.
+     */
+    public function requisicoes()
+    {
+        return $this->hasMany(Requisicao::class);
     }
 }
