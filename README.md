@@ -1,7 +1,6 @@
 <div align="center">
   <img src="https://i.imgur.com/LBbsz9A.png" width="400" alt="BookOrganizer Logo">
   <br><br>
-  <h1>📚 BookOrganizer</h1>
   <p><strong>Um sistema completo de gestão de biblioteca com requisições, roles e integração com APIs externas.</strong></p>
   <p>Desenvolvido com o ecossistema TALL (Tailwind, Alpine.js, Laravel, Livewire) e DaisyUI.</p>
   <br>
@@ -74,7 +73,6 @@ O admin tem acesso a todas as funcionalidades do cidadão, mais um conjunto de f
 ## 🔌 APIs e Serviços Externos
 
 *   **Google Books API:** Utilizada no formulário de adição de livros. Ao inserir um ISBN, a aplicação conecta-se à API para buscar e preencher automaticamente os dados do livro, incluindo título, autores, editora, bibliografia e imagem da capa. A lógica também cria novos autores e editoras na base de dados se eles não existirem.
-*   **Mailtrap.io:** Utilizado como servidor SMTP de desenvolvimento para capturar e depurar os emails transacionais da aplicação, como a notificação de requisição aprovada.
 
 ---
 
