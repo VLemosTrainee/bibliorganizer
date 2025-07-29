@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="URL_DO_SEU_LOGOTIPO_AQUI" width="400" alt="BookOrganizer Logo">
+  <img src="https://i.imgur.com/LBbsz9A.png" width="400" alt="BookOrganizer Logo">
   <br><br>
   <h1>📚 BookOrganizer</h1>
   <p><strong>Um sistema completo de gestão de biblioteca com requisições, roles e integração com APIs externas.</strong></p>
